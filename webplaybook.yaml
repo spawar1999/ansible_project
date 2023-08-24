@@ -1,0 +1,35 @@
+---
+- name: Setup WebServer
+  hosts: webservers
+  become: yes
+  tasks:
+    - name: Adding Banner file
+      copy:
+        content: 'This server is managed by ansible. No manual changes please'
+        dest: /etc/motd
+
+    - name: Install Apache httpd 
+      yum:
+         name: "{{item}}"
+         state: present
+      loop:
+        - wget
+        - unzip
+        - zip
+        - git
+         
+    - name: Start & Enable HTTPD
+      service:
+        name: httpd
+        state: started
+        enabled: yes
+
+    - name: Copy index.html file
+      copy:
+        src: index.html
+        dest: /var/www/html/index.html
+        owner: root
+        group: root
+        mode: '0644'
+        backup: yes
+
