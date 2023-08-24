@@ -17,7 +17,7 @@ all:
         web01:
         web02:
         web03:
-    dbserver:
+    dbservers:
       hosts:
         db01:
         db02:
