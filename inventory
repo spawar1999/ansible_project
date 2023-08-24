@@ -6,6 +6,7 @@ all:
        ansible_host: 172.31.85.115
       web03:
         ansible_host: 172.31.59.22
+	ansible_user: ubuntu
        db01:
          ansible_host: 172.31.80.10
        db02:
