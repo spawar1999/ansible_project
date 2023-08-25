@@ -1,0 +1,37 @@
+---
+- name: Nightly Backup and Reboot
+  hosts: webservers
+  gather_facts: true
+  tasks:
+    - name: Get current date and time
+      set_fact:
+        current_datetime: "{{ ansible_date_time.date }}_{{ ansible_date_time.time }}"
+
+    - name: Take nightly backup
+      copy:
+        src: "/var/data/*"
+        dest: "/backup/{{ ansible_hostname }}_{{ current_datetime }}/"
+      cron:
+        name: "Nightly Backup"
+        minute: 0
+        hour: 0
+
+    - name: Schedule CPU utilization checking every 5 minutes
+      cron:
+        name: "Check CPU Utilization"
+        job: "top -b -n 1 | awk '/^%Cpu/{print 100 - \$8}' > /tmp/cpu_utilization.txt"
+        minute: "*/5"
+        user: "{{ ansible_user }}"
+        state: present
+
+    - name: Get CPU utilization from file
+      slurp:
+        path: /tmp/cpu_utilization.txt
+      register: cpu_utilization_result
+
+    - name: Reboot servers on high CPU usage
+      reboot:
+        msg: "High CPU utilization detected, rebooting server."
+      when: cpu_utilization_result.content | float > 90.0
+
+
