@@ -6,13 +6,13 @@
     - name: Install ntp agent on centos
       yum:
         name: chrony
-        state present
+        state: present
       when: ansible_distribution == "CentOS"
 
     - name: Install ntp agent on ubuntu
       apt:
         name: ntp
-        state present
+        state: present
         update_cache: yes
       when: ansible_distribution == "Ubuntu"
 
